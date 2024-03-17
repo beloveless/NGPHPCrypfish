@@ -50,8 +50,8 @@ RUN git clone https://github.com/CopernicaMarketingSoftware/PHP-CPP.git ./PHP-CP
 #     && phpenmod -v 7.2 phpcrypton 
 
 # Install PHPCrypton
-RUN git clone https://github.com/hermanka/NGPHPCrypton.git \
-    && cd ./NGPHPCrypton \
+RUN git clone https://github.com/beloveless/NGPHPCrypfish-code.git \
+    && cd ./NGPHPCrypfish-code \
     && make clean -s \
     && make -s \
     && make install -s \
