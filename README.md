@@ -1,6 +1,6 @@
-# Next Generation PHPCrypton
+# Next Generation PHPCrypfish
 
-<p style="text-align: justify;">PHP Code Obfuscation inside CI/CD Pipeline using layout obfuscation and AES-256 Encryption</p>
+<p style="text-align: justify;">PHP Code Obfuscation inside CI/CD Pipeline using layout obfuscation and Blowfish Encryption</p>
 
 ### Dockerfile
 
