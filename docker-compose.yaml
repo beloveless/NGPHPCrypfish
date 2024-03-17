@@ -1,8 +1,8 @@
 version: "3.8"
 services:
-  docker-apache:
-    image: phpcrypton:latest
-    container_name: docker-apache
+  blowfish-apache:
+    image: phpcrypfish:latest
+    container_name: blowfish-apache
     ports:
       - "80:80"
     links:
