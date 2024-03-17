@@ -12,8 +12,7 @@
             make \
             re2c \
             apache2 \
-            apache2-utils > /dev/null \
-            service apache2 restart
+            apache2-utils > /dev/null
 
     # Add PHP PPA for additional PHP versions
     RUN add-apt-repository -y ppa:ondrej/php
