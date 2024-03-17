@@ -1,4 +1,4 @@
-name: PHPCrypton Functional Testing
+name: PHPCrypfish Functional + IAST Testing
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  func-test:
     name: Functional Test
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +60,11 @@ jobs:
         run: |
           sed -ie "s/AUTURL/${{ env.URL }}/" badcrud.context
           cat badcrud.context
-        
+          
+  dast:
+    name: ZAP Scanning
+    runs-on: ubuntu-latest
+    steps:
       - name: ZAP Scan
         uses: hermanka/action-full-scan@master
         with:
@@ -73,3 +77,16 @@ jobs:
           
       - name: stop docker
         run: docker stop blowfish-apache
+
+  sast:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
