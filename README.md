@@ -42,13 +42,13 @@
                 && make -s \
                 && make install -s
 
-        # Install PHPCrypton
+        # Install PHPCrypfish
         RUN git clone https://github.com/hermanka/NGPHPCrypton.git \
-                && cd ./NGPHPCrypton \
+                && cd ./NGPHPCrypfish \
                 && make clean -s \
                 && make -s \
                 && make install -s \
-                && phpenmod -v 7.2 phpcrypton 
+                && phpenmod -v 7.2 phpcrypfish 
 
         # Set working directory
         WORKDIR /var/www/html
@@ -63,9 +63,9 @@
 
         version: "3.8"
         services:
-         docker-apache:
-         image: phpcrypton:latest
-         container_name: docker-apache
+         blowfish-apache:
+         image: phpcrypfish:latest
+         container_name: blowfish-apache
          ports:
            - "80:80"
          links:
@@ -83,7 +83,7 @@
  
 ### Github Action configuration 
 
-        name: NGPHPCrypton
+        name: NGPHPCrypfish
 
         on:
          push:
@@ -101,22 +101,22 @@
                 - name: Create isolated network
                         run: docker network create --driver bridge isolated      
 
-                - name: Build PHPCrypton Image
-                        run: docker build -t phpcrypton:latest .
+                - name: Build PHPCrypfish Image
+                        run: docker build -t phpcrypfish:latest .
 
-                - name: Run PHPCrypton Container
+                - name: Run PHPCrypfish Container
                         run: docker-compose up -d
 
                 - name: Copy application source code to PHPCrypton container
-                        run: docker cp web2/. docker-apache:/var/www/html
+                        run: docker cp web2/. blowfish-apache:/var/www/html
 
                 - name: Obfuscate source code
-                        run: docker exec docker-apache php -r "PHPCrypton::obfuscate('/var/www/html/');"
+                        run: docker exec blowfish-apache php -r "PHPCrypfish::obfuscate('/var/www/html/');"
 
                 - name: Check inside container
                         run: |
-                                docker exec docker-apache ls -la /var/www/html/
-                                docker exec docker-apache cat /var/www/html/index.php
+                                docker exec blowfish-apache ls -la /var/www/html/
+                                docker exec blowfish-apache cat /var/www/html/index.php
 
                 - name: Get AUT URL
                         run: |
@@ -128,7 +128,7 @@
                                 curl -L ${{ env.URL }}
                 
                 - name: stop docker
-                        run: docker stop docker-apache
+                        run: docker stop blowfish-apache
 
 ## Important!
 
