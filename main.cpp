@@ -316,7 +316,7 @@ public:
     }
 
     static void obfus(Php::Parameters &params) {
-        std::string type = "aes-256-cbc";
+        std::string type = "bf-cbc";
         std::string path = params[0];
 
         vector<string> listfile;
@@ -387,7 +387,7 @@ public:
 
     static void decrypt(Php::Parameters &params) {
         // @todo add implementation
-        std::string type = "aes-256-cbc";
+        std::string type = "bf-cbc";
         std::string msg = params[0];
 
         // :TODO kondisi jika tidak ada close tag
@@ -420,7 +420,7 @@ public:
         std::string first_key = Php::call("base64_decode", firstkey);
         std::string second_key = Php::call("base64_decode", secondkey);
 
-        // std::string method = "aes-256-cbc";
+        // std::string method = "bf-cbc";
         std::string iv_length = Php::call("openssl_cipher_iv_length", method);
         std::string iv = Php::call("openssl_random_pseudo_bytes", iv_length);
 
@@ -438,7 +438,7 @@ public:
     }
 
     static std::string openssl_dec(std::string method, std::string cipher) {
-        // static void aes_dec(Php::Parameters &params){
+        // static void bf_dec(Php::Parameters &params){
 
         std::string firstkey = "Lk5Uz3slx3BrAghS1aaW5AYgWZRV0tIX5eI0yPchFz4=";
         std::string secondkey = "EZ44mFi3TlAey1b2w4Y7lVDuqO+SRxGXsa7nctnr/JmMrA2vN6EJhrvdVZbxaQs5jpSe34X3ejFK/o9+Y5c83w==";
@@ -447,7 +447,7 @@ public:
         std::string second_key = Php::call("base64_decode", secondkey);
 
         std::string mix = Php::call("base64_decode", cipher);
-        // std::string method = "aes-256-cbc";
+        // std::string method = "bf-cbc";
         int iv_length = Php::call("openssl_cipher_iv_length", method);
         std::string iv = Php::call("substr", mix, 0, iv_length);
 
