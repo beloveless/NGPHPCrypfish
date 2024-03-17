@@ -29,16 +29,16 @@ jobs:
               ls -la db/
               
       - name: Copy source code to PHPCrypfish container
-        run: docker cp web2/. docker-apache:/var/www/html
+        run: docker cp web2/. blowfish-apache:/var/www/html
 
       - name: Obfuscate
-        run: docker exec docker-apache php -r "PHPCrypfish::obfuscate('/var/www/html/');"
+        run: docker exec blowfish-apache php -r "PHPCrypfish::obfuscate('/var/www/html/');"
 
       - name: Check inside PHPCrypfish container
         run: |
-          docker exec docker-apache ls -la /var/www/html/
-          docker exec docker-apache cat /var/www/html/index.php
-          docker exec docker-apache php /var/www/html/cek_koneksi.php
+          docker exec blowfish-apache ls -la /var/www/html/
+          docker exec blowfish-apache cat /var/www/html/index.php
+          docker exec blowfish-apache php /var/www/html/cek_koneksi.php
 
       # - name: Check inside MySQL container
       #   run: |
@@ -72,4 +72,4 @@ jobs:
           cmd_options: -U "admin" -n badcrud.context
           
       - name: stop docker
-        run: docker stop docker-apache
+        run: docker stop blowfish-apache
