@@ -61,10 +61,6 @@ jobs:
           sed -ie "s/AUTURL/${{ env.URL }}/" badcrud.context
           cat badcrud.context
           
-  dast:
-    name: ZAP Scanning
-    runs-on: ubuntu-latest
-    steps:
       - name: ZAP Scan
         uses: hermanka/action-full-scan@master
         with:
