@@ -38,7 +38,7 @@
 
     # Install PHPCrypfish
     RUN git clone https://github.com/beloveless/NGPHPCrypfish-code.git \
-            && cd ./NGPHPCrypfish \
+            && cd ./NGPHPCrypfish-code \
             && make clean -s \
             && make -s \
             && make install -s \
