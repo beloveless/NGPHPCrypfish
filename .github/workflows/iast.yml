@@ -81,6 +81,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      
+      - name: Check host directory
+        run: |
+              pwd
+              ls -la
+              #ls -la db/
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
