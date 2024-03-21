@@ -6,6 +6,7 @@ function pdo_connect(){
     $DATABASE_PASS = 'password';
     $DATABASE_NAME = 'badcrud';
     try {
+        echo "Connected to MySQL successfully";
     	return new PDO('mysql:host=' . $DATABASE_HOST . ';dbname=' . $DATABASE_NAME, $DATABASE_USER, $DATABASE_PASS);
     } catch(Exception $e) {
         return $e;
