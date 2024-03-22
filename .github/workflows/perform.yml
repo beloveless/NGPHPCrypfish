@@ -97,7 +97,7 @@ jobs:
           cmd_options: -U "admin" -n badcrud.context
           
       - name: stop docker
-        run: docker stop docker-apache
+        run: docker stop blowfish-apache
 
   performance-test:
     name: Performance Test
