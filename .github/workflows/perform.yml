@@ -9,7 +9,13 @@ jobs:
   build-image:
     name: Build Images
     runs-on: ubuntu-latest
+    outputs:
+      start_time: ${{ steps.set_start_time.outputs.start_time }}
     steps:
+      - name: Set Start Time
+        id: set_start_time
+        run: echo "::set-output name=start_time::$(date +%s)"
+
       - name: Checkout Repository
         uses: actions/checkout@v4 
 
@@ -99,10 +105,25 @@ jobs:
       - name: stop docker
         run: docker stop blowfish-apache
 
+      - name: Calculate Duration
+        run: |
+          start_time=${{ needs.build-image.outputs.start_time }}
+          end_time=$(date +%s)
+          duration=$((end_time - start_time))
+          echo "Dynamic Analysis duration: $duration seconds."
+
   performance-test:
     name: Performance Test
     needs: build-image
     runs-on: ubuntu-latest
     steps:
-      - name: just hello
-        run: echo "Hello World!"
+      - name: Calculate Total Workflow Duration
+        run: |
+          start_time=${{ needs.build-image.outputs.start_time }}
+          end_time=$(date +%s)
+          duration=$((end_time - start_time))
+          minutes=$((duration / 60))
+          seconds=$((duration % 60))
+          echo "Total CI/CD process took $duration seconds."
+          echo "Or, more precisely, $minutes minute(s) and $seconds second(s)."
+
