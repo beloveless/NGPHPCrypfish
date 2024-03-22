@@ -1,0 +1,108 @@
+name: PHPCrypfish Performance Testing
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-image:
+    name: Build Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 
+
+      - name: Build PHPCrypfish Image
+        run: docker build -t phpcrypfish:latest .
+
+      - name: Save PHPCrypfish Image to Artifact
+        run: docker save -o /tmp/phpcrypfish.tar phpcrypfish:latest
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: phpcrypfish
+          path: /tmp/phpcrypfish.tar
+          
+  dast:
+    name: Dynamic Analysis
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create isolated network
+        run: docker network create --driver bridge isolated 
+
+      - name: Download image from artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: phpcrypfish
+          path: /tmp
+      
+      - name: Load saved image
+        run: docker load < /tmp/phpcrypfish.tar
+
+      - name: Run PHPCrypfish Container
+        run: docker-compose up -d
+
+      - name: Check host directory
+        run: |
+              pwd
+              ls -la
+              ls -la db/
+              
+      - name: Copy source code to PHPCrypfish container
+        run: docker cp web2/. blowfish-apache:/var/www/html
+
+      - name: Obfuscate
+        run: docker exec blowfish-apache php -r "PHPCrypfish::obfuscate('/var/www/html/');"
+
+      - name: Check inside PHPCrypfish container
+        run: |
+          docker exec blowfish-apache ls -la /var/www/html/
+          docker exec blowfish-apache cat /var/www/html/index.php
+          docker exec blowfish-apache php /var/www/html/cek_koneksi.php
+      # - name: Check inside MySQL container
+      #   run: |
+      #     docker exec docker-mysql mysql -uroot -ppassword -hlocalhost
+
+      - name: Get AUT URL
+        run: |
+          URL=$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1)
+          echo "URL=$URL" >> $GITHUB_ENV
+      - name: Check AUT URL
+        run: |
+          curl -L http://${{ env.URL }}/cek_koneksi.php
+      
+      - name: Context Setup
+        # env:
+        #     # Set a previously defined secret as an environment variable for this step:
+        #     AUTURL: ${{secrets.B64PASSWORD}}
+        # Replace the "AUTURL" string in the context file with the real base64-encoded password:
+        run: |
+          sed -ie "s/AUTURL/${{ env.URL }}/" badcrud.context
+          cat badcrud.context
+          
+      - name: ZAP Scan
+        uses: hermanka/action-full-scan@master
+        with:
+          target: http://${{ env.URL }}
+          network_name: isolated
+      #     # Additional command line options
+      #     # -j   runs the AJAX spider
+      #     # -U   specifies which user to select from the context file
+          cmd_options: -U "admin" -n badcrud.context
+          
+      - name: stop docker
+        run: docker stop docker-apache
+
+  performance-test:
+    name: Performance Test
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: just hello
+        run: echo "Hello World!"
