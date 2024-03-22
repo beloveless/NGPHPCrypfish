@@ -1,4 +1,4 @@
-name: PHPCrypfish Performance Testing
+name: Performance Testing
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Set Start Time
         id: set_start_time
-        run: echo "::set-output name=start_time::$(date +%s)"
+        run: echo "start_time=$(date +%s)" >> $GITHUB_ENV
 
       - name: Checkout Repository
         uses: actions/checkout@v4 
@@ -26,7 +26,7 @@ jobs:
           docker build -t phpcrypfish:latest .
           end_time=$(date +%s)
           duration=$((end_time - start_time))
-          echo "::set-output name=duration::$duration"
+          echo "build_duration=$duration" >> $GITHUB_ENV
 
       - name: Save PHPCrypfish Image to Artifact
         run: docker save -o /tmp/phpcrypfish.tar phpcrypfish:latest
@@ -119,7 +119,7 @@ jobs:
           # Your existing steps for measuring page load time here...
           end_time=$(date +%s)
           zap_duration=$((end_time - start_time))
-          echo "::set-output name=duration::$zap_duration"
+          echo "duration=${zap_duration}" >> $GITHUB_OUTPUT
 
       - name: Calculate Duration
         run: |
@@ -129,14 +129,14 @@ jobs:
           dynamic_analysis_duration=${{ needs.dast.outputs.duration }}
           duration=$((end_time - start_time))
           total_duration=$((build_duration + dynamic_analysis_duration + zap_duration))
-          echo "::set-output name=total_duration::$total_duration"
+          echo "duration=${duration}" >> $GITHUB_OUTPUT
 
   performance-test:
     name: Performance Test
     needs: [build-image, dast]
     runs-on: ubuntu-latest
     steps:
-      - name: Calculate Total Workflow Duration
+      - name: Calculate End-Users's Duration
         run: |
           start_time=${{ needs.build-image.outputs.start_time }}
           end_time=$(date +%s)
