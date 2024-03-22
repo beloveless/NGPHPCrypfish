@@ -127,9 +127,9 @@ jobs:
           end_time=$(date +%s)
           build_duration=${{ needs.build-image.outputs.build_duration }}
           dynamic_analysis_duration=${{ needs.dast.outputs.duration }}
-          duration=$((end_time - start_time))
+          zap_duration=${{ env.zap_duration }}
           total_duration=$((build_duration + dynamic_analysis_duration + zap_duration))
-          echo "duration=${duration}" >> $GITHUB_OUTPUT
+          echo "total_duration=${total_duration}" >> $GITHUB_ENV
 
   performance-test:
     name: Performance Test
