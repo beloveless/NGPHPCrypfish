@@ -9,24 +9,13 @@ jobs:
   build-image:
     name: Build Images
     runs-on: ubuntu-latest
-    outputs:
-      start_time: ${{ steps.set_start_time.outputs.start_time }}
-      build_duration: ${{ steps.build-image-duration.outputs.duration }}
     steps:
-      - name: Set Start Time
-        id: set_start_time
-        run: echo "start_time=$(date +%s)" >> $GITHUB_ENV
-
       - name: Checkout Repository
         uses: actions/checkout@v4 
 
       - name: Build PHPCrypfish Image
         run: |
-          start_time=$(date +%s)
           docker build -t phpcrypfish:latest .
-          end_time=$(date +%s)
-          duration=$((end_time - start_time))
-          echo "build_duration=$duration" >> $GITHUB_ENV
 
       - name: Save PHPCrypfish Image to Artifact
         run: docker save -o /tmp/phpcrypfish.tar phpcrypfish:latest
@@ -41,8 +30,6 @@ jobs:
     name: Dynamic Analysis
     needs: build-image
     runs-on: ubuntu-latest
-    outputs:
-      duration: ${{ steps.dynamic-analysis-duration.outputs.duration }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -113,38 +100,21 @@ jobs:
       - name: stop docker
         run: docker stop blowfish-apache
 
-      - name: Measure Page Load Time
-        run: |
-          start_time=$(date +%s)
-          # Your existing steps for measuring page load time here...
-          end_time=$(date +%s)
-          zap_duration=$((end_time - start_time))
-          echo "duration=${zap_duration}" >> $GITHUB_OUTPUT
 
-      - name: Calculate Duration
-        run: |
-          start_time=${{ needs.build-image.outputs.start_time }}
-          end_time=$(date +%s)
-          build_duration=${{ needs.build-image.outputs.build_duration }}
-          dynamic_analysis_duration=${{ needs.dast.outputs.duration }}
-          zap_duration=${{ env.zap_duration }}
-          total_duration=$((build_duration + dynamic_analysis_duration + zap_duration))
-          echo "total_duration=${total_duration}" >> $GITHUB_ENV
-
-  performance-test:
-    name: Performance Test
-    needs: [build-image, dast]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Calculate End-Users's Duration
-        run: |
-          start_time=${{ needs.build-image.outputs.start_time }}
-          end_time=$(date +%s)
-          duration=$((end_time - start_time))
-          minutes=$((duration / 60))
-          seconds=$((duration % 60))
-          echo "Total process by end-user's perspective took $duration seconds."
-          echo "Or, more precisely, $minutes minute(s) and $seconds second(s)."
+  # performance-test:
+  #   name: Performance Test
+  #   needs: [build-image, dast]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Calculate End-Users's Duration
+  #       run: |
+  #         start_time=${{ needs.build-image.outputs.start_time }}
+  #         end_time=$(date +%s)
+  #         duration=$((end_time - start_time))
+  #         minutes=$((duration / 60))
+  #         seconds=$((duration % 60))
+  #         echo "Total process by end-user's perspective took $duration seconds."
+  #         echo "Or, more precisely, $minutes minute(s) and $seconds second(s)."
 
   sast:
     name: SonarCloud
