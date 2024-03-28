@@ -101,6 +101,19 @@ jobs:
           durasi=$((end - start))
           echo "Waktu eksekusi: $((durasi / 60)) menit dan $((durasi % 60)) detik."
 
+      - name: Cek seluruh aplikasi dan ukur waktu eksekusi
+        run: |
+          URL=http://${{ env.URL }}
+          start=$(date +%s%N) # Waktu start dalam nanodetik
+          while read path; do
+            curl -s "$URL/$path" > /dev/null
+          done < paths.txt
+          end=$(date +%s%N) # Waktu end dalam nanodetik
+          durasi=$((end - start))
+          echo "Waktu eksekusi: $((durasi / 1000000000)) detik dan $((durasi % 1000000000)) nanodetik."
+        env:
+          URL: ${{ env.URL }}
+
       - name: Context Setup
         # env:
         #     # Set a previously defined secret as an environment variable for this step:
