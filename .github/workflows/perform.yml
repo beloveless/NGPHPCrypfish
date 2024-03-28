@@ -69,7 +69,7 @@ jobs:
       - name: Upload code as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: obfuscated-phpcrypfish-code
+          name: obfuscated-source-code
           path: ./obfuscated_code
 
       - name: Check inside PHPCrypfish container
@@ -85,10 +85,22 @@ jobs:
         run: |
           URL=$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1)
           echo "URL=$URL" >> $GITHUB_ENV
+
       - name: Check AUT URL
         run: |
           curl -L http://${{ env.URL }}/cek_koneksi.php
-      
+
+      - name: Check execution time by end user's perspection
+        run: |
+          URL=http://${{ env.URL }}/cek_koneksi.php
+          start=$SECONDS
+          for i in $(seq 1 100); do
+            curl -s "$URL" > /dev/null
+          done
+          end=$SECONDS
+          durasi=$((end - start))
+          echo "Waktu eksekusi: $((durasi / 60)) menit dan $((durasi % 60)) detik."
+
       - name: Context Setup
         # env:
         #     # Set a previously defined secret as an environment variable for this step:
