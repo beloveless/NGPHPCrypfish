@@ -107,16 +107,17 @@ jobs:
           start=$(date +%s%N) # Waktu start dalam nanodetik
           # Fungsi untuk melakukan curl pada path tertentu
           function test_path() {
-            curl "$1/$2" > /dev/null
+            echo "Accessing URL: ${1}/${2}"  # Debug output
+            curl "${1}/${2}" > /dev/null
           }
       
           # Loop sebanyak 100 kali menggunakan race condition
-          for path in $(cat web2/paths.txt); do
+          while IFS= read -r path; do
             # Panggil fungsi test_path secara bersamaan untuk setiap path
             for i in $(seq 1 100); do
               test_path "$URL" "$path" &
             done
-          done
+          done < web2/paths.txt
       
           # Tunggu semua proses selesai
           wait
