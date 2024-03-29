@@ -1,10 +1,6 @@
-cek_koneksi.php
 create.php
 delete.php
-functions.php
 index.php
 login.php
-logout.php
-menu.php
 profil.php
 update.php

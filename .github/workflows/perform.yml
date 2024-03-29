@@ -107,7 +107,7 @@ jobs:
           start=$(date +%s%N) # Waktu start dalam nanodetik
           # Fungsi untuk melakukan curl pada path tertentu
           function test_path() {
-            curl -s "$1/$2" > /dev/null
+            curl "$1/$2" > /dev/null
           }
       
           # Loop sebanyak 100 kali menggunakan race condition
